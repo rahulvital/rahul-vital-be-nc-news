@@ -1,4 +1,6 @@
 const db = require("../db/connection")
+const fs = require("fs/promises")
+const path = require("path")
 
 const fetchTopics = () => {
     return db.query(`SELECT * FROM topics;`).then((fetchedTopics) => {
@@ -6,4 +8,11 @@ const fetchTopics = () => {
     })
 }
 
-module.exports = { fetchTopics }
+const fetchAPI = () => {
+    const filePath = path.join(__dirname, '../endpoints.json')
+    return fs.readFile(filePath, "utf-8")
+    .then((file) => JSON.parse(file))
+        
+}
+
+module.exports = { fetchTopics, fetchAPI }

@@ -1,6 +1,7 @@
-const { fetchTopics } = require("../models/news.model")
+const { fetchTopics, fetchAPI } = require("../models/news.model")
+const fs = require("fs/promises")
 
-const getTopics = (req, res, next) => {{
+const getTopics = (req, res, next) => {
     fetchTopics()
     .then((topics) => {
         res.status(200).send({ topics })
@@ -8,6 +9,16 @@ const getTopics = (req, res, next) => {{
     .catch((err) => {
         next(err)
     })
-}}
+}
 
-module.exports = { getTopics }
+const getAPI = (req, res, next) => {
+    fetchAPI()
+    .then((apis) => {
+        res.status(200).json(apis)
+    })
+    .catch((err) => {
+        next(err)
+    })
+}
+
+module.exports = { getTopics, getAPI }
