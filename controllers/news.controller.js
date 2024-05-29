@@ -1,5 +1,4 @@
-const { fetchTopics, fetchAPI } = require("../models/news.model")
-const fs = require("fs/promises")
+const { fetchTopics, fetchAPI, fetchArticleByID, checkValidArticleId } = require("../models/news.model")
 
 const getTopics = (req, res, next) => {
     fetchTopics()
@@ -21,4 +20,19 @@ const getAPI = (req, res, next) => {
     })
 }
 
-module.exports = { getTopics, getAPI }
+const getArticleByID = (req, res, next) => {
+    const { article_id } = req.params
+
+    checkValidArticleId(article_id)
+    .then(() => {
+        return fetchArticleByID(article_id)
+    })
+    .then((article) => {
+        res.status(200).send({ article })
+    })
+    .catch((err) => {
+        next(err)
+    })
+}
+
+module.exports = { getTopics, getAPI, getArticleByID }

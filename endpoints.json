@@ -25,5 +25,20 @@
         }
       ]
     }
+  },
+  "GET /api/articles/:article_id": {
+    "description": "serves an article object corresponding to the article_id",
+    "queries": ["author", "title", "body", "topic", "created_at", "votes", "article_img_url"],
+    "exampleResponse": {
+      "article_id": 21,
+      "title": "How to: Saiyans",
+      "topic": "Aliens",
+      "author": "Prince_Vegeta",
+      "body": "Pride is power",
+      "created_at": "1999-07-09T20:11:00.000Z",
+      "votes": 9001,
+      "article_img_url": "https://i.imgflip.com/6vv5zm.jpg"
+    }
+
   }
 }
