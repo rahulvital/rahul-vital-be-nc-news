@@ -3,6 +3,7 @@ const db = require("../db/connection");
 const app = require("../app");
 const seed = require("../db/seeds/seed");
 const testData = require("../db/data/test-data/index");
+
 const fs = require("fs/promises")
 const path = require("path")
 
@@ -39,7 +40,7 @@ describe("GET /api", () => {
     })
 })
 
-describe("GET /api/article/:article_id", () => {
+describe("GET /api/articles/:article_id", () => {
     it("Should return a status code: 200 and an article object", () => {
         return request(app)
              .get("/api/articles/1")
@@ -72,6 +73,44 @@ describe("GET /api/article/:article_id", () => {
         .expect(400)
         .then(({ body }) => {
             expect(body.msg).toBe("Bad Request")
+        })
+    })
+})
+
+describe("GET /api/articles", () => {
+    it("Should return a status code: 200 and an array of all articles", () => {
+        return request(app)
+        .get("/api/articles")
+        .expect(200)
+        .then(({ body }) => {
+            expect(body.length).toBe(13)
+        })
+    })
+    it("Should return a status code: 200 and an array of all articles, removing the body key", () => {
+        return request(app)
+        .get("/api/articles")
+        .expect(200)
+        .then(({ body }) => {
+            body.forEach((article) => {
+                expect(article).toEqual({
+                    article_id: expect.any(Number),
+                    title: expect.any(String),
+                    topic: expect.any(String),
+                    author: expect.any(String),
+                    created_at: expect.any(String),
+                    votes: expect.any(Number),
+                    article_img_url: expect.any(String),
+                    comment_count: expect.any(Number)
+                }) 
+            })
+        })
+    })
+    it("Should return a status code: 200 and an ordered array of all articles", () => {
+        return request(app)
+        .get("/api/articles")
+        .expect(200)
+        .then(({ body }) => {
+            expect(body).toBeSortedBy('created_at', { descending: true, coerce: true })
         })
     })
 })
