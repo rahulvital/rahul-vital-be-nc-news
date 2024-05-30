@@ -83,7 +83,8 @@ describe("GET /api/articles", () => {
         .get("/api/articles")
         .expect(200)
         .then(({ body }) => {
-            expect(body.length).toBe(13)
+            const { articles } = body
+            expect(articles.length).toBe(13)
         })
     })
     it("Should return a status code: 200 and an array of all articles, removing the body key", () => {
@@ -91,7 +92,8 @@ describe("GET /api/articles", () => {
         .get("/api/articles")
         .expect(200)
         .then(({ body }) => {
-            body.forEach((article) => {
+            const { articles } = body
+            articles.forEach((article) => {
                 expect(article).toEqual({
                     article_id: expect.any(Number),
                     title: expect.any(String),
@@ -110,7 +112,54 @@ describe("GET /api/articles", () => {
         .get("/api/articles")
         .expect(200)
         .then(({ body }) => {
-            expect(body).toBeSortedBy('created_at', { descending: true, coerce: true })
+            const { articles } = body
+            expect(articles).toBeSortedBy('created_at', { descending: true, coerce: true })
+        })
+    })
+})
+
+describe("GET /api/articles/:article_id/comments", () => {
+    it("Should return a status code: 200 and an array of the comments", () => {
+        return request(app)
+        .get("/api/articles/1/comments")
+        .expect(200)
+        .then(({ body }) => {
+        const { comments } = body
+            comments.forEach((comment) => {
+                expect(comment).toEqual({
+                    comment_id: expect.any(Number),
+                    body: expect.any(String),
+                    article_id: expect.any(Number),
+                    author: expect.any(String),
+                    votes: expect.any(Number),
+                    created_at: expect.any(String)
+                })
+            })
+        })
+    })
+    it("Should return a status code: 200 and an ordered array of all articles", () => {
+        return request(app)
+        .get("/api/articles/1/comments")
+        .expect(200)
+        .then(({ body }) => {
+            const { comments } = body
+            expect(comments).toBeSortedBy('created_at', { descending: true, coerce: true })
+        })
+    })
+    it("Should return error 404 when searching for an invalid article_id", ()=> {
+        return request(app)
+        .get("/api/articles/420/comments")
+        .expect(404)
+        .then(({ body }) => {
+            expect(body.msg).toBe("Article not found")
+        })
+    })
+    it("Should return error 400 when searching for an invalid url (article_id is NaN)", ()=> {
+        return request(app)
+        .get("/api/articles/seven/comments")
+        .expect(400)
+        .then(({ body }) => {
+            expect(body.msg).toBe("Bad Request")
         })
     })
 })
