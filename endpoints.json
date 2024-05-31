@@ -80,5 +80,14 @@
   },
   "DELETE /api/comments/:comment_id": {
     "description": "deletes the selected comment by its comment id, serving an emoty object back"
+  },
+  "GET /api/users": {
+    "description": "serves an array of all the users",
+    "queries": ["username", "name", "avatar_url"],
+    "exampleResponse": {
+      "username": "rogersop",
+      "name": "paul",
+      "avatar_url": "https://avatars2.githubusercontent.com/u/24394918?s=400&v=4"
+    }
   }
 }

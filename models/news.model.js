@@ -96,4 +96,11 @@ const fetchDeleteComment = (deleteComment) => {
     })
 }
 
-module.exports = { fetchTopics, fetchAPI, fetchArticleByID, checkValidArticleId, fetchArticles, fetchCommentsByArticle, createComments, fetchPatchedArticle, fetchDeleteComment, checkValidCommentId }
+const fetchUsers = () => {
+    return db.query(`SELECT * FROM users;`)
+    .then((allUsers) => {
+        return allUsers.rows
+    })
+}
+
+module.exports = { fetchTopics, fetchAPI, fetchArticleByID, checkValidArticleId, fetchArticles, fetchCommentsByArticle, createComments, fetchPatchedArticle, fetchDeleteComment, checkValidCommentId, fetchUsers }
