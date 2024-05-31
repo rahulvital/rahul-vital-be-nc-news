@@ -72,7 +72,7 @@ describe("GET /api/articles/:article_id", () => {
         .get("/api/articles/seven")
         .expect(400)
         .then(({ body }) => {
-            expect(body.msg).toBe("Bad Request: invalid URL")
+            expect(body.msg).toBe("Bad Request: Invalid URL")
         })
     })
 })
@@ -153,7 +153,7 @@ describe("GET /api/articles/:article_id/comments", () => {
         .get("/api/articles/invalid_id/comments")
         .expect(400)
         .then(({ body }) => {
-            expect(body.msg).toBe("Bad Request: invalid URL")
+            expect(body.msg).toBe("Bad Request: Invalid URL")
         })
     })
 })
@@ -181,7 +181,7 @@ describe("POST /api/articles/:article_id/comments", () => {
              .send(newComment)
              .expect(400)
              .then(({ body }) => {
-                expect(body.msg).toBe("Bad Request: invalid URL")
+                expect(body.msg).toBe("Bad Request: Invalid URL")
              })
     })
     it("Should return a status code: 404 when articles_id doesn't exist", () => {
@@ -221,7 +221,7 @@ describe("POST /api/articles/:article_id/comments", () => {
 
 describe("PATCH /api/articles/:article_id", () => {
     it("Should return the updated article when sent an object with a vote count", () => {
-        const updateVotes = { inc_votes: 10 }
+        const updateVotes = { inc_votes: -10 }
         
         return request(app)
         .patch("/api/articles/1")
@@ -234,7 +234,7 @@ describe("PATCH /api/articles/:article_id", () => {
                 article_id: 1,
                 title: 'Living in the shadow of a great man',
                 body: 'I find this existence challenging',
-                votes: 110,
+                votes: 90,
                 topic: 'mitch',
                 author: 'butter_bridge',
                 created_at: '2020-07-09T20:11:00.000Z',
@@ -249,7 +249,7 @@ describe("PATCH /api/articles/:article_id", () => {
         .send(updateVotes)
         .expect(400)
         .then(({ body }) => {        
-            expect(body.msg).toBe("Bad Request: invalid URL")
+            expect(body.msg).toBe("Bad Request: Invalid URL")
         })
     })
     it("Should return an error 404 when given an unassigned article_id", () => {
@@ -272,7 +272,7 @@ describe("PATCH /api/articles/:article_id", () => {
             expect(body.msg).toBe("Bad Request: Invalid body")
         })
     })
-    it("Should return an error 400 when given an empty body", () => {
+    it("Should return an error 400 when given an invalid body", () => {
         const updateVotes = { inc_votes: "invalid_votes"}
         return request(app)
         .patch("/api/articles/3")
@@ -280,6 +280,33 @@ describe("PATCH /api/articles/:article_id", () => {
         .expect(400)
         .then(({ body }) => {        
             expect(body.msg).toBe("Bad Request: Invalid body")
+        })
+    })
+})
+
+describe("DELETE /api/comments/:comment_id", () => {
+    it("Should return a status 204 when sent a correct delete request", () => {
+        return request(app)
+        .delete("/api/comments/1")
+        .expect(204)
+        .then(({ body }) => {
+            expect(body).toEqual({})
+        })
+    })
+    it("Should return an error 404 when given an unassigned comment_id", () => {
+        return request(app)
+        .delete("/api/comments/420")
+        .expect(404)
+        .then(({ body }) => {        
+            expect(body.msg).toBe("Comment Not Found")
+        })
+    })
+    it("Should return an error 400 when given an invalid comment_id", () => {
+        return request(app)
+        .delete("/api/comments/invalid_id")
+        .expect(400)
+        .then(({ body }) => {       
+            expect(body.msg).toBe("Bad Request: Invalid URL")
         })
     })
 })

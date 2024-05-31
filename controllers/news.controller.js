@@ -1,4 +1,4 @@
-const { fetchTopics, fetchAPI, fetchArticleByID, checkValidArticleId, fetchArticles, fetchCommentsByArticle, createComments, fetchPatchedArticle } = require("../models/news.model")
+const { fetchTopics, fetchAPI, fetchArticleByID, checkValidArticleId, fetchArticles, fetchCommentsByArticle, createComments, fetchPatchedArticle, fetchDeleteComment, checkValidCommentId } = require("../models/news.model")
 
 const getTopics = (req, res, next) => {
     fetchTopics()
@@ -94,4 +94,19 @@ const patchArticle = (req, res, next) => {
     })
 }
 
-module.exports = { getTopics, getAPI, getArticleByID, getArticles, getCommentsByArticle, postComments, patchArticle }
+const deleteComment = (req, res, next) => {
+    const {comment_id} = req.params
+    
+    checkValidCommentId(comment_id)
+    .then(()=> {
+        return fetchDeleteComment(comment_id)
+    })
+    .then((deletedComment)=> {
+        res.status(204).send({ comment: deletedComment })
+    })
+    .catch((err) => {
+        next(err)
+    })
+}
+
+module.exports = { getTopics, getAPI, getArticleByID, getArticles, getCommentsByArticle, postComments, patchArticle, deleteComment }

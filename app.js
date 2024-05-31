@@ -1,5 +1,5 @@
 const express = require("express")
-const { getTopics, getAPI, getArticleByID, getArticles, getCommentsByArticle, postComments, patchArticle } = require("./controllers/news.controller")
+const { getTopics, getAPI, getArticleByID, getArticles, getCommentsByArticle, postComments, patchArticle, deleteComment } = require("./controllers/news.controller")
 
 const app = express();
 app.use(express.json())
@@ -11,12 +11,12 @@ app.get("/api/articles", getArticles)
 app.get("/api/articles/:article_id/comments", getCommentsByArticle)
 
 app.post("/api/articles/:article_id/comments", postComments)
-
 app.patch("/api/articles/:article_id", patchArticle)
+app.delete("/api/comments/:comment_id", deleteComment)
 
 app.use((err, req, res, next) => {
     if(err.code === "22P02") {
-        res.status(400).send({ msg: "Bad Request: invalid URL"})
+        res.status(400).send({ msg: "Bad Request: Invalid URL"})
     } else if(err.code === "23502"){
         res.status(400).send({ msg: "Bad Request: Body or Username not present" })
     } else {

@@ -74,4 +74,26 @@ const fetchPatchedArticle = (article_id, inc_votes) => {
     })
 }
 
-module.exports = { fetchTopics, fetchAPI, fetchArticleByID, checkValidArticleId, fetchArticles, fetchCommentsByArticle, createComments, fetchPatchedArticle }
+const checkValidCommentId = (comment_id) => {    
+    return db.query(`SELECT * FROM comments WHERE comment_id =$1`, [comment_id])
+    .then((validComment) => {
+        if (validComment.rows.length > 0) {
+            return true     
+        } else {
+            return Promise.reject({ status: 404, msg: "Comment Not Found"})
+        }
+    })
+}
+
+const fetchDeleteComment = (deleteComment) => {
+
+    return db.query(`DELETE FROM comments WHERE comment_id = $1`, [deleteComment])
+    .then((returnDelete) => {
+        return returnDelete.rows
+    })
+    .catch((err) => {
+        return Promise.reject({ status: 400, msg: "Bad Request: Comment Not Found"})
+    })
+}
+
+module.exports = { fetchTopics, fetchAPI, fetchArticleByID, checkValidArticleId, fetchArticles, fetchCommentsByArticle, createComments, fetchPatchedArticle, fetchDeleteComment, checkValidCommentId }
