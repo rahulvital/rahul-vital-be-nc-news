@@ -80,5 +80,8 @@
   },
   "DELETE /api/comments/:comment_id": {
     "description": "deletes the selected comment by its comment id, serving an emoty object back"
+  },
+  "GET /api/users": {
+    "description": "serves an"
   }
 }
