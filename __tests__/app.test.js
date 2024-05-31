@@ -64,7 +64,7 @@ describe("GET /api/articles/:article_id", () => {
         .get("/api/articles/420")
         .expect(404)
         .then(({ body }) => {
-            expect(body.msg).toBe("Article not found")
+            expect(body.msg).toBe("Not Found")
         })
     })
     it("Should return error 400 when searching for an invalid url (article_id is NaN)", ()=> {
@@ -78,15 +78,6 @@ describe("GET /api/articles/:article_id", () => {
 })
 
 describe("GET /api/articles", () => {
-    it("Should return a status code: 200 and an array of all articles", () => {
-        return request(app)
-        .get("/api/articles")
-        .expect(200)
-        .then(({ body }) => {
-            const { articles } = body
-            expect(articles.length).toBe(13)
-        })
-    })
     it("Should return a status code: 200 and an array of all articles, removing the body key", () => {
         return request(app)
         .get("/api/articles")
@@ -151,7 +142,7 @@ describe("GET /api/articles/:article_id/comments", () => {
         .get("/api/articles/420/comments")
         .expect(404)
         .then(({ body }) => {
-            expect(body.msg).toBe("Article not found")
+            expect(body.msg).toBe("Not Found")
         })
     })
     it("Should return error 400 when searching for an invalid url (article_id is NaN)", ()=> {
@@ -160,6 +151,61 @@ describe("GET /api/articles/:article_id/comments", () => {
         .expect(400)
         .then(({ body }) => {
             expect(body.msg).toBe("Bad Request")
+        })
+    })
+})
+
+describe("POST /api/articles/:article_id/comments", () => {
+    it("Should return a status code: 201 and the posted comment", () => {
+        const newComment = { username: 'butter_bridge', body: 'Im not Kakarot?'}
+        
+        return request(app)
+             .post("/api/articles/1/comments")
+             .send(newComment)
+             .expect(201)
+             .then(({ body }) => {
+                const { comment } = body
+                
+                expect(comment).toEqual({
+                    comment_id: expect.any(Number),
+                    body: expect.any(String),
+                    votes: expect.any(Number),
+                    author: expect.any(String),
+                    article_id: expect.any(Number),
+                    created_at: expect.any(String)
+                })
+             })
+    })
+    it("Should return a status code: 400 when articles_id is NaN", () => {
+        const newComment = { username: 'butter_bridge', body: 'Im not Kakarot?'}
+        
+        return request(app)
+             .post("/api/articles/seven/comments")
+             .send(newComment)
+             .expect(400)
+             .then(({ body }) => {
+                expect(body.msg).toBe("Bad Request")
+             })
+    })
+    it("Should return a status code: 404 when articles_id doesn't exist", () => {
+        const newComment = { username: 'butter_bridge', body: 'Im not Kakarot?'}
+        
+        return request(app)
+             .post("/api/articles/420/comments")
+             .send(newComment)
+             .expect(404)
+             .then(({ body }) => {
+                expect(body.msg).toBe("Not Found")
+             })
+    })
+    it("Should return error 422 when using invalid input (username/body isnt present/valid)", ()=> {
+        const invalidComment = { username: 'butter_bridge' }
+        return request(app)
+        .post("/api/articles/1/comments")
+        .send(invalidComment)
+        .expect(422)
+        .then(({ body }) => {
+            expect(body.msg).toBe("Unprocessable Entity")
         })
     })
 })

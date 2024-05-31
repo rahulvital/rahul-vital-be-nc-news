@@ -21,19 +21,15 @@ const fetchArticleByID = (article_id) => {
     })
 }
 
-const checkValidArticleId = (article_id) => {
-    if (isNaN(article_id)){
-        throw { status: 400, msg: "Bad Request" }
-    } else {
-        return db.query(`SELECT * FROM articles WHERE article_id =$1`, [article_id])
-        .then((validArticle) => {
-            if (validArticle.rows.length > 0) {
-                return true     
-            } else {
-                return Promise.reject({ status: 404, msg: "Article not found"})
-            }
-        })
-    }
+const checkValidArticleId = (article_id) => {    
+    return db.query(`SELECT * FROM articles WHERE article_id =$1`, [article_id])
+    .then((validArticle) => {
+        if (validArticle.rows.length > 0) {
+            return true     
+        } else {
+            return Promise.reject({ status: 404, msg: "Not Found"})
+        }
+    })
 }
 
 const fetchArticles = () => {
@@ -52,4 +48,16 @@ const fetchCommentsByArticle = (article_id) => {
     })
 }
 
-module.exports = { fetchTopics, fetchAPI, fetchArticleByID, checkValidArticleId, fetchArticles, fetchCommentsByArticle }
+const createComments = (article_id, { username, body }) => {
+    const created_at = new Date()
+
+    return db.query(
+        `INSERT INTO comments (body, votes, author, article_id, created_at) 
+        VALUES ($1, $2, $3, $4, $5) RETURNING *;`, 
+    [body, 0, username, article_id, created_at])
+    .then((postedComments) => {
+        return postedComments.rows[0]
+    })
+}
+
+module.exports = { fetchTopics, fetchAPI, fetchArticleByID, checkValidArticleId, fetchArticles, fetchCommentsByArticle, createComments }

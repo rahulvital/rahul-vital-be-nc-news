@@ -1,4 +1,4 @@
-const { fetchTopics, fetchAPI, fetchArticleByID, checkValidArticleId, fetchArticles, fetchCommentsByArticle } = require("../models/news.model")
+const { fetchTopics, fetchAPI, fetchArticleByID, checkValidArticleId, fetchArticles, fetchCommentsByArticle, createComments } = require("../models/news.model")
 
 const getTopics = (req, res, next) => {
     fetchTopics()
@@ -59,4 +59,23 @@ const getCommentsByArticle = (req, res, next) => {
     })
 }
 
-module.exports = { getTopics, getAPI, getArticleByID, getArticles, getCommentsByArticle }
+const postComments = (req, res, next) => {
+    const { article_id } = req.params
+    const { username, body } = req.body
+    
+    checkValidArticleId(article_id) 
+    .then(() => {
+        createComments(article_id, { username, body })
+        .then((postedComment) => {
+            res.status(201).send({ comment: postedComment })
+        })
+        .catch((err) => {
+            next(err)
+        })
+    })
+    .catch((err) => {
+        next(err)
+    })
+}
+
+module.exports = { getTopics, getAPI, getArticleByID, getArticles, getCommentsByArticle, postComments }
