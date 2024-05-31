@@ -1,4 +1,4 @@
-const { fetchTopics, fetchAPI, fetchArticleByID, checkValidArticleId, fetchArticles, fetchCommentsByArticle, createComments } = require("../models/news.model")
+const { fetchTopics, fetchAPI, fetchArticleByID, checkValidArticleId, fetchArticles, fetchCommentsByArticle, createComments, fetchPatchedArticle } = require("../models/news.model")
 
 const getTopics = (req, res, next) => {
     fetchTopics()
@@ -78,4 +78,20 @@ const postComments = (req, res, next) => {
     })
 }
 
-module.exports = { getTopics, getAPI, getArticleByID, getArticles, getCommentsByArticle, postComments }
+const patchArticle = (req, res, next) => {
+    const { article_id } = req.params
+    const { inc_votes } = req.body
+
+    checkValidArticleId(article_id)
+    .then(() => {
+        return fetchPatchedArticle(article_id, inc_votes)
+    })
+    .then((patchedArticle) => {
+            res.status(200).send({ article: patchedArticle })
+    })
+    .catch((err) => {
+        next(err)
+    })
+}
+
+module.exports = { getTopics, getAPI, getArticleByID, getArticles, getCommentsByArticle, postComments, patchArticle }

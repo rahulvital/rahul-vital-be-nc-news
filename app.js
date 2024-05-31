@@ -1,5 +1,5 @@
 const express = require("express")
-const { getTopics, getAPI, getArticleByID, getArticles, getCommentsByArticle, postComments } = require("./controllers/news.controller")
+const { getTopics, getAPI, getArticleByID, getArticles, getCommentsByArticle, postComments, patchArticle } = require("./controllers/news.controller")
 
 const app = express();
 app.use(express.json())
@@ -12,9 +12,13 @@ app.get("/api/articles/:article_id/comments", getCommentsByArticle)
 
 app.post("/api/articles/:article_id/comments", postComments)
 
+app.patch("/api/articles/:article_id", patchArticle)
+
 app.use((err, req, res, next) => {
     if(err.code === "22P02") {
-        res.status(400).send({ msg: "Bad Request"})
+        res.status(400).send({ msg: "Bad Request: invalid URL"})
+    } else if(err.code === "23502"){
+        res.status(400).send({ msg: "Bad Request: Body or Username not present" })
     } else {
         next(err)
     }
@@ -23,15 +27,9 @@ app.use((err, req, res, next) => {
 app.use((err, req, res, next) => {
     if(err.status === 404){
         res.status(404).send({ msg: err.msg })
-    } else { 
-        next(err)
-    }
-})
-
-app.use((err, req, res, next) => {
-    if(err.code === "23502"){
-        res.status(422).send({ msg: "Unprocessable Entity" })
-    } else { 
+    } else if (err.code === "23503") {
+        res.status(404).send({ msg: "Not Found: Username Not Found"})
+    } else {
         next(err)
     }
 })
