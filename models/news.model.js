@@ -27,7 +27,7 @@ const checkValidArticleId = (article_id) => {
         if (validArticle.rows.length > 0) {
             return true     
         } else {
-            return Promise.reject({ status: 404, msg: "Not Found"})
+            return Promise.reject({ status: 404, msg: "Article Not Found"})
         }
     })
 }
@@ -60,4 +60,18 @@ const createComments = (article_id, { username, body }) => {
     })
 }
 
-module.exports = { fetchTopics, fetchAPI, fetchArticleByID, checkValidArticleId, fetchArticles, fetchCommentsByArticle, createComments }
+const fetchPatchedArticle = (article_id, inc_votes) => {
+    
+    return db.query(`UPDATE articles
+    SET votes = votes + $1
+    WHERE article_id = $2
+    RETURNING *;`, [inc_votes, article_id])
+    .then(({ rows }) => {
+        return rows[0]
+    })
+    .catch((err)=> {
+        return Promise.reject({ status: 400, msg: "Bad Request: Invalid body"})
+    })
+}
+
+module.exports = { fetchTopics, fetchAPI, fetchArticleByID, checkValidArticleId, fetchArticles, fetchCommentsByArticle, createComments, fetchPatchedArticle }
