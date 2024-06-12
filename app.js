@@ -1,6 +1,7 @@
 const express = require("express")
 const { getTopics, getAPI, getArticleByID, getArticles, getCommentsByArticle, postComments, patchArticle, deleteComment, getUsers } = require("./controllers/news.controller")
 
+
 const app = express();
 app.use(express.json())
 
