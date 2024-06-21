@@ -77,7 +77,7 @@ describe("GET /api/articles/:article_id", () => {
     })
 })
 
-describe("GET /api/articles", () => {
+describe.only("GET /api/articles", () => {
     it("Should return a status code: 200 and an array of all articles, removing the body key", () => {
         return request(app)
         .get("/api/articles")

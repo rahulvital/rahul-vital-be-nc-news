@@ -49,7 +49,7 @@ const fetchArticles = ({ sort_by = "created_at", order = "desc" } = {}) => {
         FROM articles 
         LEFT JOIN comments ON articles.article_id = comments.article_id 
         GROUP BY articles.article_id 
-        ORDER BY $1 $2`, [sort_by, order])
+        ORDER BY ${sort_by} ${order};`)
     .then((allArticles) => {
         return allArticles.rows
     })
